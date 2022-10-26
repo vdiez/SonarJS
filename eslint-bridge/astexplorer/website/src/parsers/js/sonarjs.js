@@ -28,6 +28,10 @@ export default {
           key: 'no-extra-semi',
           configurations: [],
           fileTypeTarget: ['MAIN']
+        }, {
+          key: 'unused-import',
+          configurations: [],
+          fileTypeTarget: ['MAIN']
         }],
         environments: [],
         globals: [],
@@ -62,7 +66,7 @@ export default {
   },
 
   nodeToRange(node) {
-    return node.ruleId || typeof node.start === 'number' ? [node.start, node.end] : undefined;
+    return typeof node.start === 'number' ? [node.start, node.end] : undefined;
   },
 
   getDefaultOptions() {

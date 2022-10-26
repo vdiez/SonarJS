@@ -61,7 +61,7 @@ export function analyzeJSTS(input: JsTsAnalysisInput, language: Language): JsTsA
 }
 
 function serialize(node: any) {
-  if (typeof node !== 'object') {
+  if (typeof node !== 'object' || node == null) {
     return node;
   }
 
