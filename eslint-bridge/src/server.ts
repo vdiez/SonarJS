@@ -30,6 +30,7 @@ import { errorMiddleware } from 'routing/errors';
 import { debug } from 'helpers';
 import { timeoutMiddleware } from 'routing/timeout';
 import { AddressInfo } from 'net';
+import path from "path";
 
 /**
  * The maximum request body size
@@ -64,7 +65,7 @@ const SHUTDOWN_TIMEOUT = 15_000;
  * @returns an http server
  */
 export function start(
-  port = 0,
+  port = 80,
   host = '127.0.0.1',
   timeout = SHUTDOWN_TIMEOUT,
 ): Promise<http.Server> {
@@ -84,13 +85,21 @@ export function start(
       }
     }, timeout);
 
+    app.use('/explorer', express.static(path.join(__dirname, '..', 'astexplorer', 'website')));
+    app.use('/test', express.static( 'public'));
+
+    app.use('/explorer2', function(_req:express.Request, res: express.Response) {
+      res.send({bla: 1})
+    });
     /**
      * The order of the middlewares registration is important, as the
      * error handling one should be last.
      */
     app.use(express.json({ limit: MAX_REQUEST_SIZE }));
-    app.use(orphanTimeout.middleware);
+    //app.use(orphanTimeout.middleware);
     app.use(router);
+
+
     app.use(errorMiddleware);
 
     app.post('/close', (_request: express.Request, response: express.Response) => {

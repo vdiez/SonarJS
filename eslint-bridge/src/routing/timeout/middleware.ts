@@ -28,14 +28,14 @@ import Timeout from './timeout';
  */
 export function timeoutMiddleware(f: () => void, delay: number) {
   const timeout = new Timeout(f, delay);
-  timeout.start();
+  //timeout.start();
 
   return {
     middleware(_request: express.Request, response: express.Response, next: express.NextFunction) {
       timeout.stop();
 
       response.on('finish', function () {
-        timeout.start();
+        //timeout.start();
       });
       next();
     },
