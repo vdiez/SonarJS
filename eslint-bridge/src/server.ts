@@ -85,7 +85,7 @@ export function start(
       }
     }, timeout);
 
-    app.use('/explorer', express.static(path.join(__dirname, '..', 'astexplorer', 'website')));
+    app.use('/explorer', express.static(path.join(__dirname, '..', 'astexplorer', 'out')));
     app.use('/test', express.static( 'public'));
 
     app.use('/explorer2', function(_req:express.Request, res: express.Response) {

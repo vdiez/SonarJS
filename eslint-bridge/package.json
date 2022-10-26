@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "bridge between SonarJS and ESLint",
   "scripts": {
-    "build": "npm ci && npm run check-format && npm run clear && npm run compile",
+    "build": "npm ci && npm run clear && npm run compile",
     "clear": "tsc -b src tests --clean",
     "check-format": "prettier --list-different \"{src,tests}/**/!(*.lint).ts\"",
     "test": "jest",
@@ -53,7 +53,6 @@
     "@typescript-eslint/eslint-plugin": "5.39.0",
     "@typescript-eslint/experimental-utils": "5.39.0",
     "@typescript-eslint/parser": "5.39.0",
-    "astexplorer-server": "file:../../astexplorer/server",
     "builtin-modules": "3.3.0",
     "bytes": "3.1.2",
     "eslint": "8.24.0",
