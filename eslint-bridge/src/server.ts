@@ -86,11 +86,6 @@ export function start(
     }, timeout);
 
     app.use('/explorer', express.static(path.join(__dirname, '..', 'astexplorer', 'out')));
-    app.use('/test', express.static( 'public'));
-
-    app.use('/explorer2', function(_req:express.Request, res: express.Response) {
-      res.send({bla: 1})
-    });
     /**
      * The order of the middlewares registration is important, as the
      * error handling one should be last.
