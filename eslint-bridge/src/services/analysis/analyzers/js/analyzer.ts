@@ -33,6 +33,7 @@ import {
 import {buildSourceCode, Language} from 'parsing/jsts';
 import {measureDuration} from 'services/monitoring';
 import {JsTsAnalysisInput, JsTsAnalysisOutput} from './analysis';
+import {stringify} from 'flatted';
 
 /**
  * Analyzes a JavaScript / TypeScript analysis input
@@ -58,20 +59,6 @@ export function analyzeJSTS(input: JsTsAnalysisInput, language: Language): JsTsA
   const analysis = () => analyzeFile(linter, input, built);
   const {result: output, duration: analysisTime} = measureDuration(analysis);
   return {...output, perf: {parseTime, analysisTime}};
-}
-
-function serialize(node: any) {
-  if (typeof node !== 'object' || node == null) {
-    return node;
-  }
-
-  const result = {} as any;
-  for (const entry of Object.entries(node)) {
-    if (entry[0] !== 'parent') {
-      result[entry[0]] = serialize(entry[1]);
-    }
-  }
-  return result;
 }
 
 /**
@@ -104,7 +91,7 @@ function analyzeFile(
       highlightedSymbols,
       cognitiveComplexity,
     );
-    return {ast: serialize(sourceCode.ast), issues, ucfgPaths, ...extendedMetrics};
+    return {ast: stringify(sourceCode.ast), scopes: stringify(sourceCode.scopeManager.scopes), issues, ucfgPaths, ...extendedMetrics};
   } catch (e) {
     /** Turns exceptions from TypeScript compiler into "parsing" errors */
     if (e.stack.indexOf('typescript.js:') > -1) {
