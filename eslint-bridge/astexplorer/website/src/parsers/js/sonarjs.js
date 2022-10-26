@@ -45,13 +45,24 @@ export default {
         tsConfigs: []
       }
 )    });
-    return res.json();
+
+    let pos = 1;
+    const lines = [pos];
+    for (const line of code.split('\n')) {
+      pos += line.length + 1;
+      lines.push(pos);
+    }
+    let json = await res.json();
+    for (const issue of json.issues) {
+      issue.type = issue.ruleId;
+      issue.start = lines[issue.line - 1] + issue.column - 1;
+      issue.end = lines[issue.endLine - 1] + issue.endColumn - 1;
+    }
+    return {type: 'Issues', issues: json.issues};
   },
 
   nodeToRange(node) {
-    if (typeof node.start === 'number') {
-      return [node.start, node.end];
-    }
+    return node.ruleId ? [node.start, node.end] : undefined;
   },
 
   getDefaultOptions() {
