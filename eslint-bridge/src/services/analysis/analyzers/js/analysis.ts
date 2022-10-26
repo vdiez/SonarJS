@@ -22,6 +22,7 @@ import { FileType } from 'helpers';
 import { CpdToken, Issue, Metrics, SymbolHighlight, SyntaxHighlight } from 'linting/eslint';
 import { AnalysisInput, AnalysisOutput } from 'services/analysis';
 import { Perf } from 'services/monitoring';
+import estree from "estree";
 
 /**
  * A partial JavaScript / TypeScript analysis input
@@ -83,4 +84,5 @@ export interface JsTsAnalysisOutput extends AnalysisOutput {
   cpdTokens?: CpdToken[];
   perf?: Perf;
   ucfgPaths?: string[];
+  ast?: estree.Node;
 }

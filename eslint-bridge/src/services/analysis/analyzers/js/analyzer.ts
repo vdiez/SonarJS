@@ -18,21 +18,21 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { APIError } from 'errors';
-import { SourceCode } from 'eslint';
-import { debug, getContext } from 'helpers';
+import {APIError} from 'errors';
+import {SourceCode} from 'eslint';
+import {debug, getContext} from 'helpers';
 import {
   computeMetrics,
   findNoSonarLines,
   getCpdTokens,
-  getSyntaxHighlighting,
   getLinter,
-  SymbolHighlight,
+  getSyntaxHighlighting,
   LinterWrapper,
+  SymbolHighlight,
 } from 'linting/eslint';
-import { buildSourceCode, Language } from 'parsing/jsts';
-import { measureDuration } from 'services/monitoring';
-import { JsTsAnalysisInput, JsTsAnalysisOutput } from './analysis';
+import {buildSourceCode, Language} from 'parsing/jsts';
+import {measureDuration} from 'services/monitoring';
+import {JsTsAnalysisInput, JsTsAnalysisOutput} from './analysis';
 
 /**
  * Analyzes a JavaScript / TypeScript analysis input
@@ -54,10 +54,24 @@ export function analyzeJSTS(input: JsTsAnalysisInput, language: Language): JsTsA
   debug(`Analyzing file "${input.filePath}" with linterId "${input.linterId}"`);
   const linter = getLinter(input.linterId);
   const building = () => buildSourceCode(input, language);
-  const { result: built, duration: parseTime } = measureDuration(building);
+  const {result: built, duration: parseTime} = measureDuration(building);
   const analysis = () => analyzeFile(linter, input, built);
-  const { result: output, duration: analysisTime } = measureDuration(analysis);
-  return { ...output, perf: { parseTime, analysisTime } };
+  const {result: output, duration: analysisTime} = measureDuration(analysis);
+  return {...output, perf: {parseTime, analysisTime}};
+}
+
+function serialize(node: any) {
+  if (typeof node !== 'object') {
+    return node;
+  }
+
+  const result = {} as any;
+  for (const entry of Object.entries(node)) {
+    if (entry[0] !== 'parent') {
+      result[entry[0]] = serialize(entry[1]);
+    }
+  }
+  return result;
 }
 
 /**
@@ -78,8 +92,8 @@ function analyzeFile(
   sourceCode: SourceCode,
 ): JsTsAnalysisOutput {
   try {
-    const { filePath, fileType } = input;
-    const { issues, highlightedSymbols, cognitiveComplexity, ucfgPaths } = linter.lint(
+    const {filePath, fileType} = input;
+    const {issues, highlightedSymbols, cognitiveComplexity, ucfgPaths} = linter.lint(
       sourceCode,
       filePath,
       fileType,
@@ -90,7 +104,7 @@ function analyzeFile(
       highlightedSymbols,
       cognitiveComplexity,
     );
-    return { issues, ucfgPaths, ...extendedMetrics };
+    return {ast: serialize(sourceCode.ast), issues, ucfgPaths, ...extendedMetrics};
   } catch (e) {
     /** Turns exceptions from TypeScript compiler into "parsing" errors */
     if (e.stack.indexOf('typescript.js:') > -1) {
@@ -124,9 +138,9 @@ function computeExtendedMetrics(
   cognitiveComplexity?: number,
 ) {
   if (getContext().sonarlint) {
-    return { metrics: findNoSonarLines(sourceCode) };
+    return {metrics: findNoSonarLines(sourceCode)};
   }
-  const { fileType, ignoreHeaderComments } = input;
+  const {fileType, ignoreHeaderComments} = input;
   if (fileType === 'MAIN') {
     return {
       highlightedSymbols,

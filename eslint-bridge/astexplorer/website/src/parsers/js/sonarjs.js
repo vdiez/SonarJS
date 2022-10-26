@@ -58,11 +58,11 @@ export default {
       issue.start = lines[issue.line - 1] + issue.column - 1;
       issue.end = lines[issue.endLine - 1] + issue.endColumn - 1;
     }
-    return {type: 'Issues', issues: json.issues};
+    return {type: 'Issues', issues: json.issues, ast: json.ast};
   },
 
   nodeToRange(node) {
-    return node.ruleId ? [node.start, node.end] : undefined;
+    return node.ruleId || typeof node.start === 'number' ? [node.start, node.end] : undefined;
   },
 
   getDefaultOptions() {
