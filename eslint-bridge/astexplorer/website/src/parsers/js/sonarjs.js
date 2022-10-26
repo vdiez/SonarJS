@@ -14,32 +14,38 @@ export default {
   locationProps: new Set(['range', 'loc', 'start', 'end']),
 
   loadParser(callback) {
-    return 'sonarjs';
+    callback('sonarjs');
   },
 
   async parse(sonarjs, code, options) {
     await fetch('/init-linter', {
       method: 'POST',
-      body: {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
         rules: [{
-          key: 'semi',
+          key: 'no-extra-semi',
           configurations: [],
           fileTypeTarget: ['MAIN']
         }],
         environments: [],
         globals: [],
-      }
+      })
     });
-    const res = await fetch('analyze-js', {
+    const res = await fetch('/analyze-js', {
       method: 'POST',
-      body: {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
         filePath: 'astexplorer',
         fileContent: code,
         fileType: 'MAIN',
         tsConfigs: []
       }
-    });
-    return res.body;
+)    });
+    return res.json();
   },
 
   nodeToRange(node) {
